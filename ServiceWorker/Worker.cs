@@ -36,12 +36,10 @@ public class Worker : BackgroundService
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             Delivery? delivery = JsonSerializer.Deserialize<Delivery>(message);        };
+
         channel.BasicConsume(queue: "delivery",
                              autoAck: true,
                              consumer: consumer);
-
-        Console.WriteLine(" Press [enter] to exit.");
-        Console.ReadLine();
 
         static void WriteToCsv(Delivery delivery)
     {
