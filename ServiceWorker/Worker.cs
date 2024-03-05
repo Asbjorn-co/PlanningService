@@ -35,7 +35,9 @@ public class Worker : BackgroundService
             Console.WriteLine(" MESSAGE RECIEVED.");
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-            Delivery? delivery = JsonSerializer.Deserialize<Delivery>(message);        };
+            Delivery? delivery = JsonSerializer.Deserialize<Delivery>(message);
+            WriteToCsv(delivery);
+        };
 
         channel.BasicConsume(queue: "delivery",
                              autoAck: true,
@@ -43,30 +45,26 @@ public class Worker : BackgroundService
 
         static void WriteToCsv(Delivery delivery)
     {
+            Console.WriteLine("Write started");
         // Define the CSV file path
-        string csvFilePath = "deliveries.csv";
+        string csvFilePath = "..\\deliveries.csv";
 
         // Check if the CSV file exists, if not, create it and write header
         if (!File.Exists(csvFilePath))
         {
             using (var writer = new StreamWriter(csvFilePath))
             {
-                writer.WriteLine("pakkeID,medlemsNavn,pickupAdresse,afleveringsAdresse");
+                    writer.WriteLine("pakkeID,medlemsNavn,pickupAdresse,afleveringsAdresse");
+                    writer.WriteLine($"{delivery.pakkeID},{delivery.medlemsNavn},{delivery.pickupAdresse},{delivery.afleveringsAdresse}");
             }
-        }
-
-        // Append the Worker information to the CSV file
-        using (var writer = new StreamWriter(csvFilePath, true))
-        {
-            writer.WriteLine($"{delivery.pakkeID},{delivery.medlemsNavn},{delivery.pickupAdresse},{delivery.afleveringsAdresse}");
-        }
-
-        using (var writer = new StreamWriter(csvFilePath))
-        {
-            writer.WriteLine("medlemsNavn,pickupAdresse,pakkeID,afleveringsAdresse");
-            
-        }
-
+        } else
+            {
+                // Append the Worker information to the CSV file
+                using (var writer = new StreamWriter(csvFilePath, true))
+                {
+                    writer.WriteLine($"{delivery.pakkeID},{delivery.medlemsNavn},{delivery.pickupAdresse},{delivery.afleveringsAdresse}");
+                }
+            }
     }
     while (!stoppingToken.IsCancellationRequested)
         {
