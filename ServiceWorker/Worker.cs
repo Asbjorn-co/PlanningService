@@ -17,9 +17,6 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-
-        Environment.SetEnvironmentVariable("CSV_FILE_PATH", "deliveries.csv");
-
         var factory = new ConnectionFactory { HostName = "localhost" };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
@@ -35,6 +32,7 @@ public class Worker : BackgroundService
         var consumer = new EventingBasicConsumer(channel);
         consumer.Received += (model, ea) =>
         {
+            Console.WriteLine(" MESSAGE RECIEVED.");
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             Delivery? delivery = JsonSerializer.Deserialize<Delivery>(message);        };
@@ -48,7 +46,7 @@ public class Worker : BackgroundService
         static void WriteToCsv(Delivery delivery)
     {
         // Define the CSV file path
-        string csvFilePath = Environment.GetEnvironmentVariable("CSV_FILE_PATH");
+        string csvFilePath = "deliveries.csv";
 
         // Check if the CSV file exists, if not, create it and write header
         if (!File.Exists(csvFilePath))
@@ -75,7 +73,7 @@ public class Worker : BackgroundService
     while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            await Task.Delay(10000, stoppingToken);
+            await Task.Delay(1000, stoppingToken);
         }
 }
 }
