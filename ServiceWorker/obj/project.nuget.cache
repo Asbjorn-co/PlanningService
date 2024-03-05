@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sstgOABlGweDhIiknm9+OtqWTu9N8Ot6FQt3apedl0N5gwKVhBp458XowSQt0HNGsP5SBTTu8giHkAdWCVTWpg==",
+  "dgSpecHash": "vk6BEWpORgseOTD91lscC9mF4ub3jc9uQBo+JEKRUNaRB/lWXvCUJDa5JWqv9XJCYqdVKz2/M9Y5O7vLMqocCA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Bruger\\Desktop\\4. Sem\\Infrastruktur & Arkitektur\\Git\\DeliveryWorker\\ServiceWorker\\ServiceWorker.csproj",
+  "projectFilePath": "C:\\Users\\Bruger\\Desktop\\4. Sem\\Infrastruktur & Arkitektur\\Git\\PlanningService\\ServiceWorker\\ServiceWorker.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Bruger\\.nuget\\packages\\microsoft.extensions.configuration\\7.0.0\\microsoft.extensions.configuration.7.0.0.nupkg.sha512",
     "C:\\Users\\Bruger\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\7.0.0\\microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
