@@ -11,7 +11,7 @@ namespace Model.ParcelDeliveryTracking
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)] // Ensure representation as ObjectId
-    public string Id { get; set; }
+    public string? Id { get; set; }
     public int ParcelDeliveryID { get; set; }
     public string Status { get; set; }
     public TrackingInformation Tracking { get; set; }

@@ -54,7 +54,7 @@ public class Worker : BackgroundService
                 Status = "In Transit",
                 Tracking = new ParcelDeliveryTracking.TrackingInformation
                 {
-                    TrackingId = "TRACK123456789",
+                    TrackingId = GenerateUniqueTrackingId(),
                     Carrier = "Vesterhavsekspressen",
                     StatusUpdates = new List<ParcelDeliveryTracking.TrackingInformation.StatusUpdate>
                 {
@@ -104,6 +104,21 @@ public class Worker : BackgroundService
             CreateTracking(delivery);
 
         }
+
+        static string GenerateUniqueTrackingId()
+{
+    // Generate a random number
+    Random random = new Random();
+    int randomNumber = random.Next(1000, 9999); // Generate a 4-digit random number
+
+    // Get the current timestamp
+    long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+    // Combine timestamp and random number to create a unique tracking ID
+    string trackingId = $"TRACK{timestamp}{randomNumber}";
+
+    return trackingId;
+}
 
         /*
         static void WriteToCsv(Delivery delivery)

@@ -8,7 +8,12 @@ using ServiceWorker;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using Model.Delivery;
+using Model.ParcelDeliveryTracking;
+using System.Text.RegularExpressions;
+
 
 namespace Controllers;
 
@@ -19,6 +24,7 @@ public class TrackingController : ControllerBase
     private readonly ILogger<TrackingController> _logger;
 
     private readonly IMongoCollection<Delivery> _deliveryCollection;
+    private readonly IMongoCollection<ParcelDeliveryTracking> _trackingCollection;
 
     private readonly string _connectionString = "mongodb://localhost:27018/";
     private readonly string _databaseName = "ParcelDelivery";
@@ -27,10 +33,11 @@ public class TrackingController : ControllerBase
     {
         _logger = logger;
         // Initialize MongoClient with connection string
-            var client = new MongoClient(_connectionString);
-            var database = client.GetDatabase(_databaseName);
+        var client = new MongoClient(_connectionString);
+        var database = client.GetDatabase(_databaseName);
 
-            _deliveryCollection = database.GetCollection<Delivery>("Deliveries");
+        _deliveryCollection = database.GetCollection<Delivery>("Deliveries");
+        _trackingCollection = database.GetCollection<ParcelDeliveryTracking>("ParcelDeliveryTracking");
     }
 
     [HttpGet]
@@ -40,7 +47,7 @@ public class TrackingController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{name}")]
+    [Route("name/{name}")]
     public ActionResult<IEnumerable<Delivery>> GetAllDeliveriesName(string name)
     {
         var filter = Builders<Delivery>.Filter.Eq(delivery => delivery.medlemsNavn, name);
@@ -48,31 +55,40 @@ public class TrackingController : ControllerBase
         return Ok(deliveries);
     }
 
-    [HttpGet("{date}")]
-public ActionResult<IEnumerable<ParcelDeliveryTracking>> GetAllDeliveriesDate(DateTime date)
-{
-    // Define match filter to find documents with a StatusUpdate matching the provided date
-    var matchFilter = Builders<ParcelDeliveryTracking>.Filter.ElemMatch(
-        tracking => tracking.Tracking.StatusUpdates,
-        statusUpdate => statusUpdate.Date == date
-    );
+    [HttpGet]
+    [Route("date/{date}")]
+    public ActionResult<IEnumerable<ParcelDeliveryTracking>> GetSpecificDate(string date)
+    {
+        // Convert the date string from the route parameter to a DateTime object
+        if (!DateTime.TryParse(date, out var targetDate))
+        {
+            return BadRequest("Invalid date format. Please provide the date in a valid format.");
+        }
 
-    // Define projection to include only the fields needed in the result
-    var projection = Builders<ParcelDeliveryTracking>.Projection.Include(tracking => tracking.Id)
-        .Include(tracking => tracking.ParcelDeliveryID)
-        .Include(tracking => tracking.Status)
-        .Include(tracking => tracking.Tracking)
-        .Slice(tracking => tracking.Tracking.StatusUpdates, 1); // Limit StatusUpdates array to 1 element
+        // Fetch all documents from the collection
+        var allTrackingObjects = _trackingCollection.Find(new BsonDocument()).ToList();
 
-    // Execute the aggregation pipeline to find deliveries matching the provided date
-    var deliveries = _deliveryCollection.Aggregate()
-        .Match(matchFilter)
-        .Project<ParcelDeliveryTracking>(projection)
-        .ToList();
+        // Filter the documents based on the target date
+        var filteredTrackingObjects = allTrackingObjects.Where(tracking =>
+            tracking.Tracking.StatusUpdates.Any(statusUpdate =>
+                statusUpdate.Date.Date == targetDate.Date
+            )
+        ).ToList();
 
-    // Return the list of deliveries as a JSON response
-    return Ok(deliveries);
+        // Return the list of filtered deliveries as a JSON response
+        return Ok(filteredTrackingObjects);
+    }
 }
-}
+
+
+
+
+
+
+
+
+
+
+
 
 
