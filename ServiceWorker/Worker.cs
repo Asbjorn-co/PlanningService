@@ -17,7 +17,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory { HostName = "localhost" };
+        var factory = new ConnectionFactory { HostName = "rabbitmq" };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
 
@@ -47,7 +47,7 @@ public class Worker : BackgroundService
     {
             Console.WriteLine("Write started");
         // Define the CSV file path
-        string csvFilePath = "..\\deliveries.csv";
+        string csvFilePath = "deliveries.csv";
 
         // Check if the CSV file exists, if not, create it and write header
         if (!File.Exists(csvFilePath))
