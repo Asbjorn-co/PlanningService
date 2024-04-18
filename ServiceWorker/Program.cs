@@ -21,7 +21,7 @@ public class Program
         // Register IMongoClient service
         services.AddSingleton<IMongoClient>(provider =>
         {
-            var connectionString = "mongodb://localhost:27018/";
+            var connectionString = "mongodb://mongodb:27017/";
             return new MongoClient(connectionString);
         });
 

@@ -26,7 +26,7 @@ public class TrackingController : ControllerBase
     private readonly IMongoCollection<Delivery> _deliveryCollection;
     private readonly IMongoCollection<ParcelDeliveryTracking> _trackingCollection;
 
-    private readonly string _connectionString = "mongodb://localhost:27018/";
+    private readonly string _connectionString = "mongodb://mongodb:27017/";
     private readonly string _databaseName = "ParcelDelivery";
 
     public TrackingController(IMongoClient mongoClient, ILogger<TrackingController> logger)
@@ -50,10 +50,19 @@ public class TrackingController : ControllerBase
     [Route("name/{name}")]
     public ActionResult<IEnumerable<Delivery>> GetAllDeliveriesName(string name)
     {
-        var filter = Builders<Delivery>.Filter.Eq(delivery => delivery.medlemsNavn, name);
-        var deliveries = _deliveryCollection.Find(filter).ToList();
-        return Ok(deliveries);
+        try
+        {
+            var filter = Builders<Delivery>.Filter.Eq(delivery => delivery.medlemsNavn, name);
+            var deliveries = _deliveryCollection.Find(filter).ToList();
+            return Ok(deliveries);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while fetching deliveries by name: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
+
 
     [HttpGet]
     [Route("date/{date}")]

@@ -19,7 +19,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory { HostName = "localhost" };
+        var factory = new ConnectionFactory { HostName = "rabbitmq" };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
 
@@ -67,7 +67,7 @@ public class Worker : BackgroundService
                 }        
             };
             // Define the MongoDB connection string
-            string mongoDBConnectionString = "mongodb://localhost:27018/";
+            string mongoDBConnectionString = "mongodb://mongodb:27017/";
 
             // Create a new MongoClient
             var client = new MongoClient(mongoDBConnectionString);
@@ -87,7 +87,7 @@ public class Worker : BackgroundService
         {
             Console.WriteLine("Insert started");
             // Define the MongoDB connection string
-            string mongoDBConnectionString = "mongodb://localhost:27018/";
+            string mongoDBConnectionString = "mongodb://mongodb:27017/";
 
             // Create a new MongoClient
             var client = new MongoClient(mongoDBConnectionString);
